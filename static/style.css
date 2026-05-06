@@ -1,0 +1,47 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f6f8;
+    color: #222;
+}
+
+.container {
+    width: 900px;
+    margin: 40px auto;
+}
+
+header {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+header p {
+    color: #666;
+}
+
+.intro,
+.articles {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.article-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 12px;
+    background: #fafafa;
+}
+
+.article-card h3 {
+    margin-top: 0;
+}
