@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Smart Knowledge Hub</title>
 
-    <!-- 引入 CSS 文件 -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -23,12 +22,28 @@
         </section>
 
         <section class="articles">
-            <h2>最近文章</h2>
+            <h2>文章列表</h2>
 
             {% for article in articles %}
                 <div class="article-card">
-                    <h3>{{ article.title }}</h3>
+                    <h3>
+                        <a href="{{ url_for('article_detail', slug=article.slug) }}">
+                            {{ article.title }}
+                        </a>
+                    </h3>
+
                     <p>{{ article.summary }}</p>
+
+                    <div class="meta">
+                        <span>分类：{{ article.category }}</span>
+                        <span>日期：{{ article.created_at }}</span>
+                    </div>
+
+                    <div class="tags">
+                        {% for tag in article.tags %}
+                            <span class="tag">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
                 </div>
             {% endfor %}
         </section>

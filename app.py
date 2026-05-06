@@ -1,4 +1,7 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, abort
+import markdown
+
+from services.article_service import get_all_articles, get_article_by_slug
 
 # 创建 Flask 应用
 app = Flask(__name__)
@@ -6,28 +9,36 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    
-    # 首页路由。当用户访问 http://127.0.0.1:5000/ 时，Flask 会执行这个函数。
-    # 先放几篇假文章，后面我们会改成从 Markdown 文件读取
-    articles = [
-        {
-            "title": "智能知识库系统项目启动",
-            "summary": "这是系统的第一篇测试文章。"
-        },
-        {
-            "title": "后续功能：自动收集文章",
-            "summary": "未来系统会从 RSS 自动收集知识内容。"
-        },
-        {
-            "title": "后续功能：相关文章推荐",
-            "summary": "未来每篇文章底部会显示相关内容。"
-        }
-    ]
-
-    # 把 articles 数据传给 index.html 页面
+    """
+    首页路由。
+    显示所有 Markdown 文章。
+    """
+    articles = get_all_articles()
     return render_template("index.html", articles=articles)
 
 
+@app.route("/article/<slug>")
+def article_detail(slug):
+    """
+    文章详情页。
+    根据 slug 读取指定 Markdown 文件。
+    """
+    article = get_article_by_slug(slug)
+
+    # 如果文章不存在，显示 404
+    if article is None:
+        abort(404)
+
+    # 把 Markdown 正文转换成 HTML
+    html_content = markdown.markdown(article["content"], extensions=["extra"])
+
+    return render_template(
+        "article.html",
+        article=article,
+        html_content=html_content
+    )
+
+
 if __name__ == "__main__":
-    # debug=True 表示开发模式，代码改动后会自动重启
+    # debug=True 表示开发模式
     app.run(debug=True)

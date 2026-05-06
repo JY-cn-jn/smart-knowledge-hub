@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ article.title }}</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a class="back-link" href="{{ url_for('index') }}">← 返回首页</a>
+            <h1>{{ article.title }}</h1>
+            <p>{{ article.summary }}</p>
+
+            <div class="meta">
+                <span>分类：{{ article.category }}</span>
+                <span>日期：{{ article.created_at }}</span>
+            </div>
+
+            <div class="tags">
+                {% for tag in article.tags %}
+                    <span class="tag">{{ tag }}</span>
+                {% endfor %}
+            </div>
+        </header>
+
+        <main class="article-content">
+            {{ html_content | safe }}
+        </main>
+    </div>
+</body>
+</html>
