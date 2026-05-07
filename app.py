@@ -1,19 +1,40 @@
+import os
+
+from dotenv import load_dotenv
 from flask import Flask, render_template, abort
 import markdown
 
-from services.article_service import get_all_articles, get_article_by_slug
+from database.db import init_database
+from models.article import Article
+from services.article_service import get_article_by_slug
+from services.index_service import sync_articles_to_db, get_all_articles_from_db
+
+# 读取 .env 文件
+load_dotenv()
 
 # 创建 Flask 应用
 app = Flask(__name__)
+
+# 从 .env 中读取数据库连接地址
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+
+# 关闭一个不必要的追踪功能，避免警告
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+# 初始化数据库
+init_database(app)
 
 
 @app.route("/")
 def index():
     """
     首页路由。
-    显示所有 Markdown 文章。
+    先把 Markdown 文章同步到 MySQL，
+    再从 MySQL 读取文章列表。
     """
-    articles = get_all_articles()
+    sync_articles_to_db()
+    articles = get_all_articles_from_db()
+
     return render_template("index.html", articles=articles)
 
 
@@ -21,11 +42,10 @@ def index():
 def article_detail(slug):
     """
     文章详情页。
-    根据 slug 读取指定 Markdown 文件。
+    根据 slug 读取对应的 Markdown 文件正文。
     """
     article = get_article_by_slug(slug)
 
-    # 如果文章不存在，显示 404
     if article is None:
         abort(404)
 
@@ -40,5 +60,4 @@ def article_detail(slug):
 
 
 if __name__ == "__main__":
-    # debug=True 表示开发模式
     app.run(debug=True)
