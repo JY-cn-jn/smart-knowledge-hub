@@ -1,13 +1,17 @@
 import os
 
 from dotenv import load_dotenv
-from flask import Flask, render_template, abort
+from flask import Flask, render_template, abort, request
 import markdown
 
 from database.db import init_database
 from models.article import Article
 from services.article_service import get_article_by_slug
-from services.index_service import sync_articles_to_db, get_all_articles_from_db
+from services.index_service import (
+    sync_articles_to_db,
+    get_all_articles_from_db,
+    search_articles
+)
 
 # 读取 .env 文件
 load_dotenv()
@@ -36,6 +40,27 @@ def index():
     articles = get_all_articles_from_db()
 
     return render_template("index.html", articles=articles)
+
+
+@app.route("/search")
+def search():
+    """
+    搜索页面。
+    从 URL 里读取 q 参数，然后搜索文章。
+    例如：/search?q=Flask
+    """
+    keyword = request.args.get("q", "").strip()
+
+    # 每次搜索前同步一次，保证新 Markdown 也能搜到
+    sync_articles_to_db()
+
+    results = search_articles(keyword)
+
+    return render_template(
+        "search.html",
+        keyword=keyword,
+        articles=results
+    )
 
 
 @app.route("/article/<slug>")

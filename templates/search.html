@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>搜索结果 - Smart Knowledge Hub</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a class="back-link" href="{{ url_for('index') }}">← 返回首页</a>
+            <h1>搜索结果</h1>
+
+            {% if keyword %}
+                <p>关键词：{{ keyword }}</p>
+            {% else %}
+                <p>请输入关键词进行搜索。</p>
+            {% endif %}
+        </header>
+
+        <section class="search-box">
+            <h2>重新搜索</h2>
+
+            <form action="{{ url_for('search') }}" method="get">
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ keyword }}"
+                    placeholder="输入关键词，例如 Flask、Python、知识库"
+                >
+                <button type="submit">搜索</button>
+            </form>
+        </section>
+
+        <section class="articles">
+            {% if keyword and articles %}
+                <h2>找到 {{ articles|length }} 篇相关文章</h2>
+
+                {% for article in articles %}
+                    <div class="article-card">
+                        <h3>
+                            <a href="{{ url_for('article_detail', slug=article.slug) }}">
+                                {{ article.title }}
+                            </a>
+                        </h3>
+
+                        <p>{{ article.summary }}</p>
+
+                        <div class="meta">
+                            <span>分类：{{ article.category }}</span>
+                            <span>日期：{{ article.created_at }}</span>
+                        </div>
+
+                        <div class="tags">
+                            {% for tag in article.tags %}
+                                <span class="tag">{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+
+            {% elif keyword %}
+                <h2>没有找到相关文章</h2>
+                <p>可以换一个关键词试试，例如 Python、Flask、Markdown。</p>
+
+            {% else %}
+                <h2>等待搜索</h2>
+                <p>请输入一个关键词，然后点击搜索。</p>
+            {% endif %}
+        </section>
+    </div>
+</body>
+</html>

@@ -21,6 +21,19 @@
             </p>
         </section>
 
+        <section class="search-box">
+            <h2>搜索知识库</h2>
+
+            <form action="{{ url_for('search') }}" method="get">
+                <input
+                    type="text"
+                    name="q"
+                    placeholder="输入关键词，例如 Flask、Python、知识库"
+                >
+                <button type="submit">搜索</button>
+            </form>
+        </section>
+
         <section class="articles">
             <h2>文章列表</h2>
 
