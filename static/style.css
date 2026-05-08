@@ -155,3 +155,70 @@ header p {
 .tag:hover {
     background: #dfe6ff;
 }
+
+.top-nav {
+    margin-top: 16px;
+}
+
+.top-nav a {
+    color: #1f4fd8;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.top-nav a:hover {
+    text-decoration: underline;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.stat-card h2 {
+    margin: 0;
+    font-size: 36px;
+    color: #1f4fd8;
+}
+
+.stat-card p {
+    margin-bottom: 0;
+    color: #666;
+}
+
+.dashboard-section {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.dashboard-section table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.dashboard-section th,
+.dashboard-section td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+.dashboard-section a {
+    color: #1f4fd8;
+    text-decoration: none;
+}
+
+.dashboard-section a:hover {
+    text-decoration: underline;
+}

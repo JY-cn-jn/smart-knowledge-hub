@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Smart Knowledge Hub</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a class="back-link" href="{{ url_for('index') }}">← 返回首页</a>
+            <h1>Dashboard</h1>
+            <p>知识库统计信息</p>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <h2>{{ stats.total_articles }}</h2>
+                <p>总文章数</p>
+            </div>
+
+            <div class="stat-card">
+                <h2>{{ stats.total_categories }}</h2>
+                <p>分类数量</p>
+            </div>
+
+            <div class="stat-card">
+                <h2>{{ stats.total_tags }}</h2>
+                <p>标签数量</p>
+            </div>
+        </section>
+
+        <section class="dashboard-section">
+            <h2>分类统计</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>分类</th>
+                        <th>文章数量</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for category, count in stats.category_stats %}
+                        <tr>
+                            <td>
+                                <a href="{{ url_for('category_page', category_name=category) }}">
+                                    {{ category }}
+                                </a>
+                            </td>
+                            <td>{{ count }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section class="dashboard-section">
+            <h2>热门标签</h2>
+
+            <div class="tags">
+                {% for tag, count in stats.tag_stats %}
+                    <a class="tag" href="{{ url_for('tag_page', tag_name=tag) }}">
+                        {{ tag }} · {{ count }}
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="dashboard-section">
+            <h2>最近文章</h2>
+
+            {% for article in stats.recent_articles %}
+                {% include "components/article_card.html" %}
+            {% endfor %}
+        </section>
+    </div>
+</body>
+</html>

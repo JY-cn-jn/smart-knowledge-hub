@@ -14,6 +14,7 @@ from services.index_service import (
     get_articles_by_category,
     get_articles_by_tag
 )
+from services.dashboard_service import get_dashboard_stats
 
 # 读取 .env 文件
 load_dotenv()
@@ -95,6 +96,18 @@ def tag_page(tag_name):
         description=f"这里显示所有带有「{tag_name}」标签的文章。",
         articles=articles
     )
+
+
+@app.route("/dashboard")
+def dashboard():
+    """
+    Dashboard 统计页。
+    显示文章数量、分类数量、标签数量和最近文章。
+    """
+    sync_articles_to_db()
+    stats = get_dashboard_stats()
+
+    return render_template("dashboard.html", stats=stats)
 
 
 @app.route("/article/<slug>")
