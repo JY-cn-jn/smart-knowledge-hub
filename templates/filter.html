@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ page_title }} - Smart Knowledge Hub</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a class="back-link" href="{{ url_for('index') }}">← 返回首页</a>
+            <h1>{{ page_title }}</h1>
+            <p>{{ description }}</p>
+        </header>
+
+        <section class="articles">
+            {% if articles %}
+                <h2>共找到 {{ articles|length }} 篇文章</h2>
+
+                {% for article in articles %}
+                    {% include "components/article_card.html" %}
+                {% endfor %}
+            {% else %}
+                <h2>暂无文章</h2>
+                <p>这个分类或标签下目前还没有文章。</p>
+            {% endif %}
+        </section>
+    </div>
+</body>
+</html>

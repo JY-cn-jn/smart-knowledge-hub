@@ -1,0 +1,28 @@
+<div class="article-card">
+    <h3>
+        <a href="{{ url_for('article_detail', slug=article.slug) }}">
+            {{ article.title }}
+        </a>
+    </h3>
+
+    <p>{{ article.summary }}</p>
+
+    <div class="meta">
+        <span>
+            分类：
+            <a href="{{ url_for('category_page', category_name=article.category) }}">
+                {{ article.category }}
+            </a>
+        </span>
+
+        <span>日期：{{ article.created_at }}</span>
+    </div>
+
+    <div class="tags">
+        {% for tag in article.tags %}
+            <a class="tag" href="{{ url_for('tag_page', tag_name=tag) }}">
+                {{ tag }}
+            </a>
+        {% endfor %}
+    </div>
+</div>

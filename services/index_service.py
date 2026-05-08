@@ -22,7 +22,7 @@ def sync_articles_to_db():
         tags_json = json.dumps(item.get("tags", []), ensure_ascii=False)
 
         if article is None:
-            # 如果数据库里没有，就新增一条
+            # 数据库里没有，就新增
             article = Article(
                 slug=item["slug"],
                 title=item["title"],
@@ -33,7 +33,7 @@ def sync_articles_to_db():
             )
             db.session.add(article)
         else:
-            # 如果已经存在，就更新文章索引
+            # 数据库里已经有，就更新
             article.title = item["title"]
             article.summary = item["summary"]
             article.category = item["category"]
@@ -59,19 +59,14 @@ def search_articles(keyword):
     """
     根据关键词搜索文章。
 
-    目前搜索范围：
+    搜索范围：
     1. 标题 title
     2. 摘要 summary
     3. 分类 category
     4. 标签 tags
-
-    注意：
-    tags 在数据库里是 JSON 字符串，
-    所以这里也可以用 like 做简单匹配。
     """
     keyword = keyword.strip()
 
-    # 如果用户没有输入关键词，直接返回空列表
     if not keyword:
         return []
 
@@ -85,5 +80,41 @@ def search_articles(keyword):
             Article.tags.like(search_text)
         )
     ).order_by(Article.created_at.desc()).all()
+
+    return [article.to_dict() for article in articles]
+
+
+def get_articles_by_category(category_name):
+    """
+    根据分类名称查询文章。
+    例如：分类是“编程”，就查出所有 category = 编程 的文章。
+    """
+    articles = Article.query.filter_by(
+        category=category_name
+    ).order_by(
+        Article.created_at.desc()
+    ).all()
+
+    return [article.to_dict() for article in articles]
+
+
+def get_articles_by_tag(tag_name):
+    """
+    根据标签名称查询文章。
+
+    注意：
+    tags 在 MySQL 里保存成 JSON 字符串，
+    例如：["Python", "Flask", "文件读取"]
+
+    所以这里先用 like 做简单匹配。
+    后面如果项目变大，可以单独设计 tags 表。
+    """
+    search_text = f"%{tag_name}%"
+
+    articles = Article.query.filter(
+        Article.tags.like(search_text)
+    ).order_by(
+        Article.created_at.desc()
+    ).all()
 
     return [article.to_dict() for article in articles]

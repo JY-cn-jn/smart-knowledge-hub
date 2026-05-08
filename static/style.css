@@ -138,3 +138,20 @@ header p {
 .search-box button:hover {
     background: #173fb0;
 }
+
+.meta a {
+    color: #1f4fd8;
+    text-decoration: none;
+}
+
+.meta a:hover {
+    text-decoration: underline;
+}
+
+.tag {
+    text-decoration: none;
+}
+
+.tag:hover {
+    background: #dfe6ff;
+}

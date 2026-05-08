@@ -10,7 +10,9 @@ from services.article_service import get_article_by_slug
 from services.index_service import (
     sync_articles_to_db,
     get_all_articles_from_db,
-    search_articles
+    search_articles,
+    get_articles_by_category,
+    get_articles_by_tag
 )
 
 # 读取 .env 文件
@@ -51,15 +53,47 @@ def search():
     """
     keyword = request.args.get("q", "").strip()
 
-    # 每次搜索前同步一次，保证新 Markdown 也能搜到
     sync_articles_to_db()
-
     results = search_articles(keyword)
 
     return render_template(
         "search.html",
         keyword=keyword,
         articles=results
+    )
+
+
+@app.route("/category/<category_name>")
+def category_page(category_name):
+    """
+    分类筛选页面。
+    例如：/category/编程
+    """
+    sync_articles_to_db()
+    articles = get_articles_by_category(category_name)
+
+    return render_template(
+        "filter.html",
+        page_title=f"分类：{category_name}",
+        description=f"这里显示所有属于「{category_name}」分类的文章。",
+        articles=articles
+    )
+
+
+@app.route("/tag/<tag_name>")
+def tag_page(tag_name):
+    """
+    标签筛选页面。
+    例如：/tag/Flask
+    """
+    sync_articles_to_db()
+    articles = get_articles_by_tag(tag_name)
+
+    return render_template(
+        "filter.html",
+        page_title=f"标签：{tag_name}",
+        description=f"这里显示所有带有「{tag_name}」标签的文章。",
+        articles=articles
     )
 
 
