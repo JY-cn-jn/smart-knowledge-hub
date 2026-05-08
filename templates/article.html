@@ -36,6 +36,18 @@
         <main class="article-content">
             {{ html_content | safe }}
         </main>
+
+        <section class="related-section">
+            <h2>相关文章</h2>
+
+            {% if related_articles %}
+                {% for article in related_articles %}
+                    {% include "components/article_card.html" %}
+                {% endfor %}
+            {% else %}
+                <p>暂时没有找到相关文章。</p>
+            {% endif %}
+        </section>
     </div>
 </body>
 </html>

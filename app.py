@@ -15,6 +15,7 @@ from services.index_service import (
     get_articles_by_tag
 )
 from services.dashboard_service import get_dashboard_stats
+from services.related_service import get_related_articles
 
 # 读取 .env 文件
 load_dotenv()
@@ -115,7 +116,11 @@ def article_detail(slug):
     """
     文章详情页。
     根据 slug 读取对应的 Markdown 文件正文。
+    同时计算相关文章。
     """
+    # 先同步一次，保证数据库里有最新文章索引
+    sync_articles_to_db()
+
     article = get_article_by_slug(slug)
 
     if article is None:
@@ -124,10 +129,14 @@ def article_detail(slug):
     # 把 Markdown 正文转换成 HTML
     html_content = markdown.markdown(article["content"], extensions=["extra"])
 
+    # 获取相关文章
+    related_articles = get_related_articles(slug, limit=3)
+
     return render_template(
         "article.html",
         article=article,
-        html_content=html_content
+        html_content=html_content,
+        related_articles=related_articles
     )
 
 
