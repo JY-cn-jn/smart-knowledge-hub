@@ -1,16 +1,23 @@
 [
   {
-    "name": "Python Insider Blog",
-    "url": "https://blog.python.org/rss.xml",
+    "name": "阮一峰的网络日志",
+    "url": "https://www.ruanyifeng.com/blog/atom.xml",
     "category": "编程",
-    "tags": ["Python", "官方博客", "自动收集"],
+    "tags": ["编程", "互联网", "技术博客", "自动收集"],
     "limit": 3
   },
   {
-    "name": "Real Python",
-    "url": "https://realpython.com/atom.xml",
+    "name": "少数派",
+    "url": "https://sspai.com/feed",
+    "category": "科技资讯",
+    "tags": ["科技", "效率工具", "数字生活", "自动收集"],
+    "limit": 3
+  },
+  {
+    "name": "美团技术团队",
+    "url": "https://tech.meituan.com/feed",
     "category": "编程",
-    "tags": ["Python", "教程", "自动收集"],
+    "tags": ["后端开发", "架构", "工程实践", "自动收集"],
     "limit": 3
   }
 ]

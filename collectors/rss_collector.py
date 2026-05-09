@@ -8,6 +8,7 @@ from pathlib import Path
 
 import feedparser
 from collectors.web_content_extractor import extract_article_text
+from processors.metadata_extractor import generate_metadata
 
 # 配置文件路径
 CONFIG_PATH = Path("config/sources.json")
@@ -204,8 +205,17 @@ def save_entry_as_markdown(entry, source):
     # 尝试根据原文链接提取完整正文
     full_text = extract_article_text(link)
 
-    category = source.get("category", "未分类")
-    tags = source.get("tags", [])
+    # 根据文章内容自动生成分类和标签
+    metadata = generate_metadata(
+        title=title,
+        summary=summary,
+        body=full_text,
+        default_category=source.get("category", "未分类"),
+        default_tags=source.get("tags", [])
+    )
+
+    category = metadata["category"]
+    tags = metadata["tags"]
 
     slug = make_slug(title, link)
     file_path = CONTENT_DIR / f"{slug}.md"
