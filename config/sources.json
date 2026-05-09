@@ -1,16 +1,16 @@
 [
   {
-    "name": "Python Official Blog",
-    "url": "https://www.python.org/blogs/rss/",
+    "name": "Python Insider Blog",
+    "url": "https://blog.python.org/rss.xml",
     "category": "编程",
-    "tags": ["Python", "RSS", "自动收集"],
+    "tags": ["Python", "官方博客", "自动收集"],
     "limit": 3
   },
   {
-    "name": "Hacker News AI",
-    "url": "https://hnrss.org/newest?q=AI",
-    "category": "人工智能",
-    "tags": ["AI", "新闻", "自动收集"],
+    "name": "Real Python",
+    "url": "https://realpython.com/atom.xml",
+    "category": "编程",
+    "tags": ["Python", "教程", "自动收集"],
     "limit": 3
   }
 ]

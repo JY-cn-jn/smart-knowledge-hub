@@ -3,9 +3,11 @@ import re
 import hashlib
 import html
 from datetime import date
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 
 import feedparser
+from collectors.web_content_extractor import extract_article_text
 
 # 配置文件路径
 CONFIG_PATH = Path("config/sources.json")
@@ -43,6 +45,80 @@ def clean_text(text):
 
     return text.strip()
 
+def format_rss_date(entry):
+    """
+    把 RSS 里的发布时间转换成 YYYY-MM-DD 格式。
+    如果 RSS 没有时间，就使用今天的日期。
+    """
+    published = entry.get("published", "")
+
+    if not published:
+        return date.today().isoformat()
+
+    try:
+        dt = parsedate_to_datetime(published)
+        return dt.date().isoformat()
+    except Exception:
+        return date.today().isoformat()
+
+def clean_hacker_news_summary(summary):
+    """
+    清理 Hacker News RSS 的摘要。
+
+    Hacker News RSS 经常长这样：
+    Article URL: ...
+    Comments URL: ...
+    Points: ...
+    # Comments: ...
+
+    这个函数把它整理成更适合页面显示的文字。
+    """
+    summary = clean_text(summary)
+
+    if "Article URL:" not in summary:
+        return summary
+
+    article_url_match = re.search(r"Article URL:\s*(.*?)\s+Comments URL:", summary)
+    points_match = re.search(r"Points:\s*(\d+)", summary)
+    comments_match = re.search(r"# Comments:\s*(\d+)", summary)
+
+    article_url = article_url_match.group(1) if article_url_match else ""
+    points = points_match.group(1) if points_match else "0"
+    comments = comments_match.group(1) if comments_match else "0"
+
+    cleaned_parts = [
+        "这是一篇来自 Hacker News 的文章。",
+        f"热度：{points} points，{comments} comments。"
+    ]
+
+    if article_url:
+        cleaned_parts.append(f"原文地址：{article_url}")
+
+    return "\n\n".join(cleaned_parts)
+
+def format_article_body(text, max_length=5000):
+    """
+    格式化网页正文。
+
+    作用：
+    1. 去掉太多空行
+    2. 给段落之间加空行，方便 Markdown 显示
+    3. 限制正文长度，避免页面太长
+    """
+    if not text:
+        return ""
+
+    # 按行拆分，去掉空行
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+
+    # 用空行连接，让 Markdown 显示成段落
+    formatted_text = "\n\n".join(lines)
+
+    # 如果正文太长，就截断
+    if len(formatted_text) > max_length:
+        formatted_text = formatted_text[:max_length] + "\n\n...（正文过长，已自动截断，可点击原文继续阅读）"
+
+    return formatted_text
 
 def safe_yaml_text(text):
     """
@@ -73,11 +149,17 @@ def make_slug(title, link):
     return f"{title_slug[:60]}-{short_hash}"
 
 
-def build_markdown(title, summary, link, category, tags, created_at):
+def build_markdown(title, summary, link, category, tags, created_at, body):
     """
     生成 Markdown 文件内容。
+
+    summary：显示在文章卡片里的摘要
+    body：真正的文章正文
     """
     tags_text = "\n".join([f"  - {tag}" for tag in tags])
+
+    # 如果没有成功提取正文，就使用摘要当正文
+    article_body = body.strip() if body else summary
 
     return f"""---
 title: "{safe_yaml_text(title)}"
@@ -92,7 +174,7 @@ source_url: "{safe_yaml_text(link)}"
 
 # {title}
 
-{summary}
+{article_body}
 
 ---
 
@@ -111,10 +193,16 @@ def save_entry_as_markdown(entry, source):
     if not link:
         return False
 
-    summary = clean_text(entry.get("summary", "暂无摘要"))
+    raw_summary = entry.get("summary", "暂无摘要")
 
-    # 优先使用 RSS 里的发布时间，没有就用今天
-    created_at = entry.get("published", "")[:10] or date.today().isoformat()
+    # 对 Hacker News 这种特殊摘要做简单清洗
+    summary = clean_hacker_news_summary(raw_summary)
+
+    # 把 RSS 发布时间转换成 YYYY-MM-DD
+    created_at = format_rss_date(entry)
+
+    # 尝试根据原文链接提取完整正文
+    full_text = extract_article_text(link)
 
     category = source.get("category", "未分类")
     tags = source.get("tags", [])
@@ -132,7 +220,8 @@ def save_entry_as_markdown(entry, source):
         link=link,
         category=category,
         tags=tags,
-        created_at=created_at
+        created_at=created_at,
+        body=full_text
     )
 
     CONTENT_DIR.mkdir(parents=True, exist_ok=True)
