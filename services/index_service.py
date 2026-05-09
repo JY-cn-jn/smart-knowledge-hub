@@ -15,30 +15,30 @@ def sync_articles_to_db():
     articles = get_all_articles()
 
     for item in articles:
-        # 先看数据库里有没有这篇文章
         article = Article.query.filter_by(slug=item["slug"]).first()
 
-        # 把 tags 列表转成 JSON 字符串，方便存入 MySQL
         tags_json = json.dumps(item.get("tags", []), ensure_ascii=False)
 
         if article is None:
-            # 数据库里没有，就新增
             article = Article(
                 slug=item["slug"],
                 title=item["title"],
                 summary=item["summary"],
                 category=item["category"],
                 tags=tags_json,
-                created_at=str(item.get("created_at", ""))
+                created_at=str(item.get("created_at", "")),
+                source_url=item.get("source_url", ""),
+                source_type=item.get("source_type", "manual")
             )
             db.session.add(article)
         else:
-            # 数据库里已经有，就更新
             article.title = item["title"]
             article.summary = item["summary"]
             article.category = item["category"]
             article.tags = tags_json
             article.created_at = str(item.get("created_at", ""))
+            article.source_url = item.get("source_url", "")
+            article.source_type = item.get("source_type", "manual")
 
     db.session.commit()
 

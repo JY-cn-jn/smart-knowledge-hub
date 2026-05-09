@@ -25,6 +25,12 @@ class Article(db.Model):
     # 先用字符串保存日期，后面有需要再改成 DateTime
     created_at = db.Column(db.String(50))
 
+    # 文章来源链接，例如 RSS 原文地址
+    source_url = db.Column(db.Text)
+
+    # 来源类型：manual 表示手动文章，rss 表示自动收集文章
+    source_type = db.Column(db.String(50), default="manual")
+
     def to_dict(self):
         """
         把数据库对象转换成字典，
@@ -36,5 +42,7 @@ class Article(db.Model):
             "summary": self.summary,
             "category": self.category,
             "tags": json.loads(self.tags) if self.tags else [],
-            "created_at": self.created_at
+            "created_at": self.created_at,
+            "source_url": self.source_url,
+            "source_type": self.source_type
         }

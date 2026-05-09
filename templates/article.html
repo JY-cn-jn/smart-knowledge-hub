@@ -31,6 +31,16 @@
                     </a>
                 {% endfor %}
             </div>
+
+            {% if article.source_url %}
+                <p>
+                    来源：
+                    <a href="{{ article.source_url }}" target="_blank">
+                        查看原文
+                    </a>
+                </p>
+            {% endif %}
+            
         </header>
 
         <main class="article-content">

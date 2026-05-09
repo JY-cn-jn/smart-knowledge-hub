@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Python Official Blog",
+    "url": "https://www.python.org/blogs/rss/",
+    "category": "编程",
+    "tags": ["Python", "RSS", "自动收集"],
+    "limit": 3
+  },
+  {
+    "name": "Hacker News AI",
+    "url": "https://hnrss.org/newest?q=AI",
+    "category": "人工智能",
+    "tags": ["AI", "新闻", "自动收集"],
+    "limit": 3
+  }
+]

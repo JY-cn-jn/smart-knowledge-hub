@@ -8,11 +8,10 @@ CONTENT_DIR = Path("content/articles")
 def get_all_articles():
     """
     读取所有 Markdown 文章的基本信息。
-    用于首页文章列表。
+    用于首页文章列表和数据库同步。
     """
     articles = []
 
-    # 遍历 content/articles 下面所有 .md 文件
     for file_path in sorted(CONTENT_DIR.glob("*.md"), reverse=True):
         post = frontmatter.load(file_path)
 
@@ -22,7 +21,9 @@ def get_all_articles():
             "summary": post.get("summary", "暂无摘要"),
             "category": post.get("category", "未分类"),
             "tags": post.get("tags", []),
-            "created_at": post.get("created_at", "")
+            "created_at": post.get("created_at", ""),
+            "source_url": post.get("source_url", ""),
+            "source_type": post.get("source_type", "manual")
         }
 
         articles.append(article)
@@ -37,7 +38,6 @@ def get_article_by_slug(slug):
     """
     file_path = CONTENT_DIR / f"{slug}.md"
 
-    # 如果文章不存在，返回 None
     if not file_path.exists():
         return None
 
@@ -50,6 +50,8 @@ def get_article_by_slug(slug):
         "category": post.get("category", "未分类"),
         "tags": post.get("tags", []),
         "created_at": post.get("created_at", ""),
+        "source_url": post.get("source_url", ""),
+        "source_type": post.get("source_type", "manual"),
         "content": post.content
     }
 
